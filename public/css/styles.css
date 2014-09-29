@@ -7,3 +7,10 @@
 	width: 80%;
 	margin: 20px auto;
 }
+
+#message {
+	width: 100%;
+	padding: 10px 20px;
+	color: white;
+	background: #54B442;
+}
