@@ -4,18 +4,28 @@
 
   TodoApp = (function() {
     function TodoApp() {
+      this.cacheElements();
       this.bindEvents();
     }
 
+    TodoApp.prototype.cacheElements = function() {
+      this.$input = $('#new-todo');
+      return this.$todoList = $('#todo-list');
+    };
+
     TodoApp.prototype.bindEvents = function() {
       $('#message').hide();
-      return $('#new-todo').on('keyup', this.create);
+      return this.$input.on('keyup', (function(_this) {
+        return function(e) {
+          return _this.create(e);
+        };
+      })(this));
     };
 
     TodoApp.prototype.create = function(e) {
       var $input, randomId, val;
-      $input = $(this);
-      val = $.trim($input.val());
+      $input = $(e.target);
+      val = $.trim(this.$input.val());
       if (!(e.which === 13 && val)) {
         return;
       }
@@ -25,8 +35,33 @@
         title: val,
         completed: false
       });
-      $input.val('');
-      return displayInfo('Item added to your list');
+      this.$input.val('');
+      displayInfo('Item added to your list');
+      return this.displayItems();
+    };
+
+    TodoApp.prototype.displayItems = function() {
+      var id, _i, _len, _ref, _results;
+      this.clearItems();
+      console.log('items cleared');
+      _ref = Object.keys(localStorage);
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        id = _ref[_i];
+        _results.push(this.addItem(localStorage.getObj(id)));
+      }
+      return _results;
+    };
+
+    TodoApp.prototype.clearItems = function() {
+      return this.$todoList.empty();
+    };
+
+    TodoApp.prototype.addItem = function(item) {
+      var html;
+      html = "<li " + (item.completed ? 'class="completed"' : '') + " data-id=\"" + item.id + "\">\n  <div id=\"view\">\n    <input class=\"toggle\" type=\"checkbox\"  " + (item.completed ? 'checked' : '') + ">\n    <label>" + item.title + "</label>\n    <button class=\"destroy\">delete</button>\n  </div>\n</li>";
+      console.log("inside addItem : " + html);
+      return this.$todoList.append(html);
     };
 
     return TodoApp;
