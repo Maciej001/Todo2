@@ -5,17 +5,31 @@ class TodoApp
     @cacheElements()  # this method caches often used elements
     @bindEvents()
 
+    # display items
+    # funny enough defining the method and trying to execute @displayItems() didn't work
+    # as if funciton didn't exist at all
+    # that is bacause 'this' pointed to the #new-todo item instead of to TodoApp class itself
+    # When binding events use (e) => function_name, that will ensure that within the function
+    # 'this' will still point to the class
+    @displayItems()
+
   cacheElements: ->
     @$input = $('#new-todo')  # @$input is a class variable that we can use later on 
     @$todoList = $('#todo-list') # where list items are to be displayed
 
   bindEvents: ->
-    #hide message notifier
+    #hide message notifier. will be used later for displaying information
     $('#message').hide()
 
     # on every keypress the create method is called
-    # using => (fat arrow) ensures that within the create method  this will still point to our class object 
+    # using => (fat arrow) ensures that within the create method  'this' will still point to our class object 
     @$input.on( 'keyup', (e) => @create(e) )
+
+    # binding destroy task event
+    @$todoList.on( 'click', '.destroy', (e) => @destroy(e.target) )
+
+    # checking element as completed
+    @$todoList.on( 'change', '.toggle', (e) => @toggle(e.target) )
 
   create: (e) ->
     # here $input points to #new-todo, it always points to element that triggered the event
@@ -24,9 +38,10 @@ class TodoApp
 
     val = ( $.trim @$input.val() ) # $.trim removes all the whitespaces
 
+    # if key != 'enter' exit
     return unless e.which == 13 && val
 
-    # below part of the code will be executed only if enter (13) is pressed
+    # below part of the code will be executed only if 'enter' (13) is pressed
 
     # create random ID
     randomId = Math.floor Math.random()*999999
@@ -34,11 +49,11 @@ class TodoApp
     # store object containing id, task and status if task has been completed
     # in local storage
     localStorage.setObj randomId, 
-    {
-      id:         randomId
-      title:      val
-      completed:  false
-    }
+      {
+        id:         randomId
+        title:      val
+        completed:  false
+      }
 
     #clear input field
     @$input.val ''
@@ -46,18 +61,13 @@ class TodoApp
     #display info for user that item has been added
     displayInfo('Item added to your list')
 
-    # display items
-    # funny enough defining the method and trying to execute @displayItems() didn't work
-    # as if funciton didn't exist at all
-    # that is bacause this now points to the #new-todo item instead of to class TodoApp itself
-    # to avoid this when binding events use (e) => function, that will ensure that within the function
-    # this will still point to the class
     @displayItems()
 
   displayItems: ->
     # first let's clear the list of items
     @clearItems()
-    console.log('items cleared')
+
+    # cycle through all key, value pairs stored in localStorage
     @addItem(localStorage.getObj(id)) for id in Object.keys(localStorage)
 
   clearItems: ->
@@ -66,16 +76,39 @@ class TodoApp
   addItem: (item) ->
     html = """
             <li #{if item.completed then 'class="completed"' else ''} data-id="#{item.id}">
-              <div id="view">
+              <div class="view">
                 <input class="toggle" type="checkbox"  #{if item.completed then 'checked' else ''}>
                 <label>#{item.title}</label>
                 <button class="destroy">delete</button>
               </div>
             </li>
           """
-    console.log("inside addItem : " + html)
+
+    # add item to #todoList      
     @$todoList.append(html)
 
+  destroy: (element) ->
+    # find element's id
+    id = $(element).closest('li').data('id')
+
+    # remove it from localStorage
+    localStorage.removeItem( id )
+
+    # redisplay items
+    @displayItems()
+
+  toggle: (element) ->
+    #find id
+    id = $(element).closest('li').data('id')
+
+    # load item
+    item = localStorage.getObj(id)
+
+    # toggle item completed status
+    item.completed = !item.completed
+
+    # save item back to local storage
+    localStorage.setObj( id, item )
 
 # Main App ------------------------
 
@@ -97,4 +130,4 @@ displayInfo = (msg) ->
     .fadeIn('fast')
     .text(msg)
     .delay(2000)
-    .fadeOut('slow')
+    .fadeOut('fast')

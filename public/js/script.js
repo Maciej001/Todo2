@@ -6,6 +6,7 @@
     function TodoApp() {
       this.cacheElements();
       this.bindEvents();
+      this.displayItems();
     }
 
     TodoApp.prototype.cacheElements = function() {
@@ -15,9 +16,19 @@
 
     TodoApp.prototype.bindEvents = function() {
       $('#message').hide();
-      return this.$input.on('keyup', (function(_this) {
+      this.$input.on('keyup', (function(_this) {
         return function(e) {
           return _this.create(e);
+        };
+      })(this));
+      this.$todoList.on('click', '.destroy', (function(_this) {
+        return function(e) {
+          return _this.destroy(e.target);
+        };
+      })(this));
+      return this.$todoList.on('change', '.toggle', (function(_this) {
+        return function(e) {
+          return _this.toggle(e.target);
         };
       })(this));
     };
@@ -43,7 +54,6 @@
     TodoApp.prototype.displayItems = function() {
       var id, _i, _len, _ref, _results;
       this.clearItems();
-      console.log('items cleared');
       _ref = Object.keys(localStorage);
       _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -59,9 +69,23 @@
 
     TodoApp.prototype.addItem = function(item) {
       var html;
-      html = "<li " + (item.completed ? 'class="completed"' : '') + " data-id=\"" + item.id + "\">\n  <div id=\"view\">\n    <input class=\"toggle\" type=\"checkbox\"  " + (item.completed ? 'checked' : '') + ">\n    <label>" + item.title + "</label>\n    <button class=\"destroy\">delete</button>\n  </div>\n</li>";
-      console.log("inside addItem : " + html);
+      html = "<li " + (item.completed ? 'class="completed"' : '') + " data-id=\"" + item.id + "\">\n  <div class=\"view\">\n    <input class=\"toggle\" type=\"checkbox\"  " + (item.completed ? 'checked' : '') + ">\n    <label>" + item.title + "</label>\n    <button class=\"destroy\">delete</button>\n  </div>\n</li>";
       return this.$todoList.append(html);
+    };
+
+    TodoApp.prototype.destroy = function(element) {
+      var id;
+      id = $(element).closest('li').data('id');
+      localStorage.removeItem(id);
+      return this.displayItems();
+    };
+
+    TodoApp.prototype.toggle = function(element) {
+      var id, item;
+      id = $(element).closest('li').data('id');
+      item = localStorage.getObj(id);
+      item.completed = !item.completed;
+      return localStorage.setObj(id, item);
     };
 
     return TodoApp;
@@ -82,7 +106,7 @@
   };
 
   displayInfo = function(msg) {
-    return $('#message').fadeIn('fast').text(msg).delay(2000).fadeOut('slow');
+    return $('#message').fadeIn('fast').text(msg).delay(2000).fadeOut('fast');
   };
 
 }).call(this);
