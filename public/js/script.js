@@ -11,7 +11,8 @@
 
     TodoApp.prototype.cacheElements = function() {
       this.$input = $('#new-todo');
-      return this.$todoList = $('#todo-list');
+      this.$todoList = $('#todo-list');
+      return this.$clearCompleted = $('#clear-completed');
     };
 
     TodoApp.prototype.bindEvents = function() {
@@ -26,9 +27,14 @@
           return _this.destroy(e.target);
         };
       })(this));
-      return this.$todoList.on('change', '.toggle', (function(_this) {
+      this.$todoList.on('change', '.toggle', (function(_this) {
         return function(e) {
           return _this.toggle(e.target);
+        };
+      })(this));
+      return this.$clearCompleted.on('click', (function(_this) {
+        return function(e) {
+          return _this.clear(e.target);
         };
       })(this));
     };
@@ -77,7 +83,8 @@
       var id;
       id = $(element).closest('li').data('id');
       localStorage.removeItem(id);
-      return this.displayItems();
+      this.displayItems();
+      return displayInfo('Item removed');
     };
 
     TodoApp.prototype.toggle = function(element) {
@@ -86,6 +93,23 @@
       item = localStorage.getObj(id);
       item.completed = !item.completed;
       return localStorage.setObj(id, item);
+    };
+
+    TodoApp.prototype.clear = function() {
+      var id, _i, _len, _ref;
+      _ref = Object.keys(localStorage);
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        id = _ref[_i];
+        this.removeItem(localStorage.getObj(id));
+      }
+      this.displayItems();
+      return displayInfo('Completed items cleared');
+    };
+
+    TodoApp.prototype.removeItem = function(item) {
+      if (item.completed) {
+        return localStorage.removeItem(item.id);
+      }
     };
 
     return TodoApp;

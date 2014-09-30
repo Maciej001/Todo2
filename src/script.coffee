@@ -16,6 +16,7 @@ class TodoApp
   cacheElements: ->
     @$input = $('#new-todo')  # @$input is a class variable that we can use later on 
     @$todoList = $('#todo-list') # where list items are to be displayed
+    @$clearCompleted = $('#clear-completed')
 
   bindEvents: ->
     #hide message notifier. will be used later for displaying information
@@ -30,6 +31,9 @@ class TodoApp
 
     # checking element as completed
     @$todoList.on( 'change', '.toggle', (e) => @toggle(e.target) )
+
+    # clear completed task
+    @$clearCompleted.on( 'click', (e) => @clear(e.target) )
 
   create: (e) ->
     # here $input points to #new-todo, it always points to element that triggered the event
@@ -97,6 +101,8 @@ class TodoApp
     # redisplay items
     @displayItems()
 
+    displayInfo('Item removed')
+
   toggle: (element) ->
     #find id
     id = $(element).closest('li').data('id')
@@ -109,6 +115,19 @@ class TodoApp
 
     # save item back to local storage
     localStorage.setObj( id, item )
+
+  # clear completed items
+  clear: ->
+    @removeItem(localStorage.getObj(id)) for id in Object.keys(localStorage) 
+
+    # refresh displayed items
+    @displayItems()
+
+    # list cleared message
+    displayInfo('Completed items cleared')
+
+  removeItem: (item) ->
+    localStorage.removeItem( item.id ) if item.completed
 
 # Main App ------------------------
 
