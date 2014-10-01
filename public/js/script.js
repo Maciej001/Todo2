@@ -74,6 +74,24 @@
     };
 
     TodoApp.prototype.addItem = function(item) {
+      var checked, completed, html, id, renderer, template, title, _ref, _ref1;
+      template = $('#itemTemplate').html();
+      renderer = Handlebars.compile(template);
+      completed = (_ref = item.completed) != null ? _ref : {
+        'completed': ''
+      };
+      id = item.id;
+      checked = (_ref1 = item.completed) != null ? _ref1 : {
+        'checked': ''
+      };
+      title = item.title;
+      html = renderer({
+        "completed": completed,
+        "id": id,
+        "checked": checked,
+        "title": title
+      });
+      console.log(html);
       return this.$todoList.append(html);
     };
 

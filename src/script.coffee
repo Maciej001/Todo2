@@ -89,22 +89,25 @@ class TodoApp
     #       """
 
     # where is my template
-    var template = $('#itemTemplate');
+    template = $('#itemTemplate').html();
 
     # compile your template
-    var renderer = Handlebars.compile(template);
-    var item = if item.completed then 'class="completed"' else ''
-    var id = item.id
-    var checked = if item.completed then 'checked' else ''
-    var title = item.title
+    renderer = Handlebars.compile(template);
 
-    var html = renderer({
-        "completed" : item,
+    # define data
+    completed = item.completed ? 'completed' : ''
+    id = item.id
+    checked = item.completed ? 'checked' : ''
+    title = item.title
+
+    # create object and render to get html
+    html = renderer({
+        "completed" : completed,
         "id"        : id,
         "checked"   : checked,
         "title"     : title,
       });
-
+    console.log html
     # add item to #todoList      
     @$todoList.append(html)
 
