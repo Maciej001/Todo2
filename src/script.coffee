@@ -78,15 +78,32 @@ class TodoApp
     @$todoList.empty()
 
   addItem: (item) ->
-    html = """
-            <li #{if item.completed then 'class="completed"' else ''} data-id="#{item.id}">
-              <div class="view">
-                <input class="toggle" type="checkbox"  #{if item.completed then 'checked' else ''}>
-                <label>#{item.title}</label>
-                <button class="destroy">delete</button>
-              </div>
-            </li>
-          """
+    # html = """
+    #         <li #{if item.completed then 'class="completed"' else ''} data-id="#{item.id}">
+    #           <div class="view">
+    #             <input class="toggle" type="checkbox"  #{if item.completed then 'checked' else ''}>
+    #             <label>#{item.title}</label>
+    #             <button class="destroy">delete</button>
+    #           </div>
+    #         </li>
+    #       """
+
+    # where is my template
+    var template = $('#itemTemplate');
+
+    # compile your template
+    var renderer = Handlebars.compile(template);
+    var item = if item.completed then 'class="completed"' else ''
+    var id = item.id
+    var checked = if item.completed then 'checked' else ''
+    var title = item.title
+
+    var html = renderer({
+        "completed" : item,
+        "id"        : id,
+        "checked"   : checked,
+        "title"     : title,
+      });
 
     # add item to #todoList      
     @$todoList.append(html)
@@ -101,7 +118,7 @@ class TodoApp
     # redisplay items
     @displayItems()
 
-    displayInfo('Item removed')
+    displayInfo('Item removed1c')
 
   toggle: (element) ->
     #find id

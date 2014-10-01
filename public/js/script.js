@@ -74,8 +74,6 @@
     };
 
     TodoApp.prototype.addItem = function(item) {
-      var html;
-      html = "<li " + (item.completed ? 'class="completed"' : '') + " data-id=\"" + item.id + "\">\n  <div class=\"view\">\n    <input class=\"toggle\" type=\"checkbox\"  " + (item.completed ? 'checked' : '') + ">\n    <label>" + item.title + "</label>\n    <button class=\"destroy\">delete</button>\n  </div>\n</li>";
       return this.$todoList.append(html);
     };
 
@@ -84,7 +82,7 @@
       id = $(element).closest('li').data('id');
       localStorage.removeItem(id);
       this.displayItems();
-      return displayInfo('Item removed');
+      return displayInfo('Item removed1c');
     };
 
     TodoApp.prototype.toggle = function(element) {
