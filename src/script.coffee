@@ -37,7 +37,7 @@ class TodoApp
 
   create: (e) ->
     # here $input points to #new-todo, it always points to element that triggered the event
-    # this, by using => was reserved for the class itself
+    # 'this', by using => was reserved for the class itself
     $input = $(e.target)  
 
     val = ( $.trim @$input.val() ) # $.trim removes all the whitespaces
@@ -107,7 +107,7 @@ class TodoApp
         "checked"   : checked,
         "title"     : title,
       });
-    console.log html
+
     # add item to #todoList      
     @$todoList.append(html)
 
@@ -121,7 +121,7 @@ class TodoApp
     # redisplay items
     @displayItems()
 
-    displayInfo('Item removed1c')
+    displayInfo('Item removed')
 
   toggle: (element) ->
     #find id

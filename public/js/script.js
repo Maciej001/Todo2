@@ -91,7 +91,6 @@
         "checked": checked,
         "title": title
       });
-      console.log(html);
       return this.$todoList.append(html);
     };
 
@@ -100,7 +99,7 @@
       id = $(element).closest('li').data('id');
       localStorage.removeItem(id);
       this.displayItems();
-      return displayInfo('Item removed1c');
+      return displayInfo('Item removed');
     };
 
     TodoApp.prototype.toggle = function(element) {
